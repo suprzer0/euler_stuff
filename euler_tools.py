@@ -13,6 +13,9 @@ import operator
 
 def mul(iterable):
     """
+    Multiplies all of the values from an iterable.
+    Similar to how sum() adds all of the values from an iterable.
+
     >>> mul([2,3])
     6
     >>> mul(xrange(1,6)) == math.factorial(5)
@@ -22,13 +25,31 @@ def mul(iterable):
     return reduce(operator.mul, iterable, 1)
 
 def comb(n, r):
-    """ Finds the number of combinations from n items taken r at a time """
+    """
+    Finds the number of combinations for n items taken r at a time.
+
+    >>> comb(6, 6)
+    1
+    >>> comb(6, 1)
+    6
+    """
     return math.factorial(n) / (math.factorial(r)*(math.factorial(n-r)))
 
 # ======= Iterators =======
 
 class CachedIter(object):
-    """ Caches the output from an iterator """
+    """ 
+    Stores the output from an iterator so previously generated values can be accessed again.
+    Useful for infinite series.
+    
+    >>> l = CachedIter(xrange(1,5))
+    >>> l[2]
+    3
+    >>> l[:2]
+    [1, 2]
+
+    
+    """
 
     def __init__(self, iterator):
         self._iter = iter(iterator)
@@ -55,12 +76,15 @@ class CachedIter(object):
         return n
 
 def fib():
+    """ Simple generator for the fibonacci sequence """
+
     a, b = 1, 1
     for dummy in count():
         yield a
         a, b = b, a+b
 
 def find_primes():
+    """ Very naive generator for finding primes. """
     found_primes = []
 
     for v in count(2):
@@ -71,6 +95,7 @@ def find_primes():
             found_primes.append(v)
             yield v
 
+# Some CachedIterators. Use these rather then the generator directly.
 primes = CachedIter(find_primes())
 fib_numbers = CachedIter(fib())
 
@@ -92,14 +117,26 @@ def find_prime_factors(n):
                 n /= p
                 break
 
-def find_divisors_from_primes(prime_divisors):
-    """ Generates a set of divisors from a list of prime divisors """
+def find_divisors_from_primes(prime_factors):
+    """ 
+    Generates a set of divisors from a list of prime factors 
+    
+    >>> find_divisors_from_primes([2,2,3])
+    set([1, 2, 3, 4, 6, 12])
+    
+    """
 
-    divisors = set([1, mul(prime_divisors)])
+    divisors = set([1, mul(prime_factors)])
 
-    return divisors.union(mul(vals) for vals in chain.from_iterable(combinations(prime_divisors, r) for r in range(1, len(prime_divisors))))
+    return divisors.union(mul(vals) for vals in chain.from_iterable(combinations(prime_factors, r) for r in range(1, len(prime_factors))))
 
 def find_divisors(n):
+    """
+    Generates a set of divisors from the number n 
+
+    >>> find_divisors(12)
+    set([1, 2, 3, 4, 6, 12])
+    """
     return find_divisors_from_primes(list(find_prime_factors(n)))
 
 if __name__ == '__main__':
