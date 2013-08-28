@@ -165,6 +165,10 @@ primes = AscendingCachedIter(find_primes())
 e_primes = AscendingCachedIter(eratos())
 fib_numbers = AscendingCachedIter(fib())
 
+def fib_num(idx):
+  gold_ratio = (1+math.sqrt(5))/2
+  return int((gold_ratio**idx - (1 - gold_ratio)**idx)/math.sqrt(5))
+
 def find_triangle_numbers(start=0):
     """ Generates triangle numbers """
     val = sum(range(1,start))
