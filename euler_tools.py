@@ -7,6 +7,7 @@ python 2.6+
 from functools import reduce
 from itertools import islice, count, cycle, compress, chain, combinations
 import math
+import numbers
 import operator
 
 # ======= Calculations =======
@@ -18,7 +19,7 @@ def mul(iterable):
 
     >>> mul([2,3])
     6
-    >>> mul(xrange(1,6)) == math.factorial(5)
+    >>> mul(range(1,6)) == math.factorial(5)
     True
     """
 
@@ -33,7 +34,7 @@ def comb(n, r):
     >>> comb(6, 1)
     6
     """
-    return math.factorial(n) / (math.factorial(r)*(math.factorial(n-r)))
+    return math.factorial(n) // (math.factorial(r)*(math.factorial(n-r)))
 
 # ======= Iterators =======
 
@@ -42,7 +43,7 @@ class CachedIter(object):
     Stores the output from an iterator so previously generated values can be accessed again.
     Useful for infinite series.
     
-    >>> l = CachedIter(xrange(1,5))
+    >>> l = CachedIter(iter(range(1,5)))
     >>> l[2]
     3
     >>> l[:2]
@@ -60,20 +61,26 @@ class CachedIter(object):
             try:
                 item = self.cache[iter_index]
             except IndexError:
-                item = self.next()
+                item = next(self)
 
             yield item
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return list(islice(iter(self), index.start, index.stop, index.step))
+            s = islice(iter(self), index.start, index.stop, index.step)
+            if index.stop:
+                return list(s)
+            else:
+                return s
         else:
-            return islice(iter(self), index, index+1).next()
+            return next(islice(iter(self), index, index+1))
 
     def next(self):
-        n = self._iter.next()
+        n = next(self._iter)
         self.cache.append(n)
         return n
+
+    __next__ = next
 
 class AscendingCachedIter(CachedIter):
     """
@@ -90,7 +97,7 @@ class AscendingCachedIter(CachedIter):
     """
 
     def __contains__(self, item):
-        if not isinstance(item, (int, long)):
+        if not isinstance(item, numbers.Number):
             return False
 
         if self.cache:
@@ -101,8 +108,8 @@ class AscendingCachedIter(CachedIter):
         else:
             next_val = None
 
-        while item > next_val:
-            next_val = self.next()
+        while next_val is None or item > next_val:
+            next_val = next(self)
 
             if item == next_val:
                 return True
@@ -180,8 +187,9 @@ def find_divisors_from_primes(prime_factors):
     """ 
     Generates a set of divisors from a list of prime factors 
     
-    >>> find_divisors_from_primes([2,2,3])
-    set([1, 2, 3, 4, 6, 12])
+    >>> divisors = find_divisors_from_primes([2,2,3])
+    >>> sorted(divisors)
+    [1, 2, 3, 4, 6, 12]
     
     """
 
@@ -193,8 +201,9 @@ def find_divisors(n):
     """
     Generates a set of divisors from the number n 
 
-    >>> find_divisors(12)
-    set([1, 2, 3, 4, 6, 12])
+    >>> divisors = find_divisors(12)
+    >>> sorted(divisors)
+    [1, 2, 3, 4, 6, 12]
     """
     return find_divisors_from_primes(list(find_prime_factors(n)))
 
