@@ -45,7 +45,10 @@ class CachedIter(object):
     >>> l = CachedIter(xrange(1,5))
     >>> l[2]
     3
-    >>> l[:2]
+    >>> l_sliced = l[:2]
+    >>> isinstance(l_sliced, CachedIter)
+    True
+    >>> list(l_sliced)
     [1, 2]
 
     
@@ -66,7 +69,7 @@ class CachedIter(object):
 
     def __getitem__(self, index):
         if isinstance(index, slice):
-            return list(islice(iter(self), index.start, index.stop, index.step))
+            return self.__class__(islice(iter(self), index.start, index.stop, index.step))
         else:
             return islice(iter(self), index, index+1).next()
 
@@ -110,27 +113,13 @@ class AscendingCachedIter(CachedIter):
         return False
 
 
-def fib():
+def fib_iter():
     """ Simple generator for the fibonacci sequence """
 
     a, b = 1, 1
-    for dummy in count():
+    while True:
         yield a
         a, b = b, a+b
-
-def find_primes():
-    """ Very naive generator for finding primes. """
-    found_primes = []
-
-    yield 2
-    for v in count(3, 2):
-        for p in found_primes:
-            if v % p == 0:
-                break
-        else:
-            found_primes.append(v)
-            yield v
-
 
 def eratos():
     D = {9:3, 25:5}
@@ -154,9 +143,8 @@ def eratos():
             D[x] = p
 
 # Some CachedIterators. Use these rather then the generator directly.
-primes = AscendingCachedIter(find_primes())
-e_primes = AscendingCachedIter(eratos())
-fib_numbers = AscendingCachedIter(fib())
+primes = AscendingCachedIter(eratos())
+fib_numbers = AscendingCachedIter(fib_iter())
 
 def fib_num(idx):
   gold_ratio = (1+math.sqrt(5))/2
