@@ -76,7 +76,10 @@ class CachedIter(object):
     3
     >>> l[2]
     3
-    >>> l[:2]
+    >>> l_sliced = l[:2]
+    >>> isinstance(l_sliced, CachedIter)
+    True
+    >>> list(l_sliced)
     [1, 2]
 
     
@@ -147,11 +150,11 @@ class AscendingCachedIter(CachedIter):
         return False
 
 
-def fib():
+def fib_iter():
     """ Simple generator for the fibonacci sequence """
 
     a, b = 1, 1
-    for dummy in count():
+    while True:
         yield a
         a, b = b, a+b
 
@@ -178,7 +181,7 @@ def eratos():
 
 # Some CachedIterators. Use these rather then the generator directly.
 primes = AscendingCachedIter(eratos())
-fib_numbers = AscendingCachedIter(fib())
+fib_numbers = AscendingCachedIter(fib_iter())
 
 def fib_num(idx):
   gold_ratio = (1+math.sqrt(5))/2
