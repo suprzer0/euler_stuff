@@ -1,7 +1,7 @@
 """ 
 Various stuff I've written to help w/ solving project euler problems
 
-python 2.6+
+python 2.6+, 3.3+
 """
 
 from functools import reduce
@@ -36,6 +36,34 @@ def comb(n, r):
     """
     return math.factorial(n) // (math.factorial(r)*(math.factorial(n-r)))
 
+def all_combos(s):
+    """ 
+        Generates tuples of all possible combinations of the items in s.
+
+        >>> combos = list(all_combos([2,2,3]))
+        >>> (2, 2) in combos
+        True
+        >>> (2,) in combos
+        True
+    """
+
+    return chain.from_iterable((tuple(c) for c in combinations(s, r)) for r in range(1, len(s)+1))
+
+
+def powerset(s):
+    """
+        Creates a set of all possible subsets of s except for the empty set.
+        >>> p_set = powerset([1,2,3])
+        >>> {1,2,3} in p_set
+        True
+        >>> {1,3} in p_set
+        True
+        >>> {2,} in p_set
+        True
+    """
+
+    return frozenset(frozenset(c) for c in all_combos(s))
+
 # ======= Iterators =======
 
 class CachedIter(object):
@@ -44,6 +72,8 @@ class CachedIter(object):
     Useful for infinite series.
     
     >>> l = CachedIter(iter(range(1,5)))
+    >>> l[2]
+    3
     >>> l[2]
     3
     >>> l[:2]
@@ -71,7 +101,7 @@ class CachedIter(object):
             if index.stop:
                 return list(s)
             else:
-                return s
+                return self.__class__(s)
         else:
             return next(islice(iter(self), index, index+1))
 
@@ -125,20 +155,6 @@ def fib():
         yield a
         a, b = b, a+b
 
-def find_primes():
-    """ Very naive generator for finding primes. """
-    found_primes = []
-
-    yield 2
-    for v in count(3, 2):
-        for p in found_primes:
-            if v % p == 0:
-                break
-        else:
-            found_primes.append(v)
-            yield v
-
-
 def eratos():
     D = {9:3, 25:5}
     yield 2
@@ -161,8 +177,7 @@ def eratos():
             D[x] = p
 
 # Some CachedIterators. Use these rather then the generator directly.
-primes = AscendingCachedIter(find_primes())
-e_primes = AscendingCachedIter(eratos())
+primes = AscendingCachedIter(eratos())
 fib_numbers = AscendingCachedIter(fib())
 
 def fib_num(idx):
@@ -181,7 +196,7 @@ def find_prime_factors(n):
     """ Finds the prime factors of a positive integer n """
     
     while n > 1:
-        for p in e_primes:
+        for p in primes:
             if n % p == 0:
                 yield p
                 n /= p
@@ -197,9 +212,7 @@ def find_divisors_from_primes(prime_factors):
     
     """
 
-    divisors = set([1, mul(prime_factors)])
-
-    return divisors.union(mul(vals) for vals in chain.from_iterable(combinations(prime_factors, r) for r in range(1, len(prime_factors))))
+    return {1} | set(mul(vals) for vals in all_combos(prime_factors))
 
 def find_divisors(n):
     """
