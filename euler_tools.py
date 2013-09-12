@@ -1,7 +1,7 @@
 """ 
 Various stuff I've written to help w/ solving project euler problems
 
-python 2.6+, 3.3+
+python 2.7, 3.3+
 """
 
 from functools import reduce
