@@ -10,7 +10,17 @@ import math
 import numbers
 import operator
 
+# Alias unicode as str when using python3
+try:
+    unicode('')
+except NameError:
+    unicode = str
+    
+
 # ======= Calculations =======
+
+def concat(iterable):
+    return reduce(lambda a,b: unicode(a)+unicode(b), iterable, unicode(''))
 
 def mul(iterable):
     """
@@ -71,16 +81,19 @@ class CachedIter(object):
     Stores the output from an iterator so previously generated values can be accessed again.
     Useful for infinite series.
     
-    >>> l = CachedIter(iter(range(1,5)))
-    >>> l[2]
-    3
-    >>> l[2]
-    3
-    >>> l_sliced = l[:2]
-    >>> isinstance(l_sliced, CachedIter)
+    >>> from itertools import count
+    >>> evens = CachedIter(count(2,2))
+    >>> evens[1]
+    4
+    >>> evens[:2]
+    [2, 4]
+    >>> evens[2:5]
+    [6, 8, 10]
+    >>> evens_sliced = evens[5:]
+    >>> isinstance(evens_sliced, evens.__class__)
     True
-    >>> list(l_sliced)
-    [1, 2]
+    >>> evens_sliced[:2]
+    [12, 14]
 
     
     """
@@ -106,6 +119,9 @@ class CachedIter(object):
             else:
                 return self.__class__(s)
         else:
+            if index < 0:
+                raise IndexError("{0} does not support negative indicies".format(self.__class__.__name__))
+
             return next(islice(iter(self), index, index+1))
 
     def next(self):
@@ -127,27 +143,47 @@ class AscendingCachedIter(CachedIter):
     >>> 3 in evens
     False
 
+    >>> evens[4]
+    10
+    >>> evens.index(10)
+    4
+    >>> evens.index(3)
+    Traceback (most recent call last):
+        ...
+    ValueError: 3 is not in AscendingCachedIter
+
     """
 
     def __contains__(self, item):
-        if not isinstance(item, numbers.Number):
+        try:
+            self.index(item)
+            return True
+        except ValueError:
             return False
 
-        if self.cache:
-            if item in self.cache:
-                return True
 
-            next_val = self.cache[-1]
+    def index(self, item):
+        if not isinstance(item, numbers.Number):
+            return 
+
+        if self.cache:
+            try:
+                return self.cache.index(item)
+            except ValueError:
+                next_val = self.cache[-1]
         else:
             next_val = None
 
+        idx = len(self.cache)
         while next_val is None or item > next_val:
             next_val = next(self)
 
             if item == next_val:
-                return True
+                return idx
 
-        return False
+            idx += 1
+
+        raise ValueError("{0} is not in {1}".format(item, self.__class__.__name__))
 
 
 def fib_iter():
