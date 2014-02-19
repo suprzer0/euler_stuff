@@ -20,7 +20,7 @@ except NameError:
 # ======= Calculations =======
 
 def concat(iterable):
-    return reduce(lambda a,b: unicode(a)+unicode(b), iterable, unicode(''))
+    return u''.join(unicode(v) for v in iterable)
 
 def mul(iterable):
     """
@@ -262,6 +262,9 @@ def find_divisors(n):
     [1, 2, 3, 4, 6, 12]
     """
     return find_divisors_from_primes(list(find_prime_factors(n)))
+
+def is_square(k):
+    return int(math.sqrt(k))**2 == int(k)
 
 if __name__ == '__main__':
     import doctest
