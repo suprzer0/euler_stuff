@@ -1,10 +1,11 @@
+from __future__ import division
 """ 
 Various stuff I've written to help w/ solving project euler problems
 
 python 2.7, 3.3+
 """
 
-from functools import reduce
+from functools import reduce, wraps
 from itertools import islice, count, cycle, compress, chain, combinations
 import math
 import numbers
@@ -15,6 +16,12 @@ try:
     unicode('')
 except NameError:
     unicode = str
+
+try:
+    # py 3.3+
+    from collections.abc import Iterator
+except ImportError:
+    from collections import Iterator
     
 
 # ======= Calculations =======
@@ -193,6 +200,64 @@ class AscendingCachedIter(CachedIter):
             idx += 1
 
         raise ValueError("{0} is not in {1}".format(item, self.__class__.__name__))
+
+
+def cached(_func=None, ascending=False):
+    """
+    Decorator for auto-wrapping iterators in a CachedIter or
+    AscendingCachedIter
+
+    >>> @cached
+    ... def i(start):
+    ...   yield start
+    ...   yield start-1
+    >>> a = i(3)
+    >>> isinstance(a, CachedIter)
+    True
+    >>> isinstance(a, AscendingCachedIter)
+    False
+    >>> list(a)
+    [3, 2]
+    >>> a.cache
+    [3, 2]
+
+    >>> @cached(ascending=True)
+    ... def k(start):
+    ...   yield start
+    ...   yield start+2
+    >>> b = k(3)
+    >>> isinstance(b, AscendingCachedIter)
+    True
+    >>> [v in b for v in (3, 4, 5, 6)]
+    [True, False, True, False]
+
+    >>> @cached
+    ... def foo():
+    ...   return 1
+    >>> c = foo()
+    Traceback (most recent call last):
+        ...
+    TypeError: <type 'int'> is not an instance of an Iterator
+
+    """
+
+    def wrap(f):
+        @wraps(f)
+        def wrapped_f(*args, **kwargs):
+            _iter = f(*args, **kwargs)
+        
+            if not isinstance(_iter, Iterator):
+                raise TypeError("{0} is not an instance of an Iterator".format(type(_iter)))
+            if ascending:
+                return AscendingCachedIter(_iter)
+            else:
+                return CachedIter(_iter)
+        return wrapped_f
+
+    if _func:
+        return wrap(_func)
+    else:
+        return wrap
 
 
 def fib_iter():
