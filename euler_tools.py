@@ -7,7 +7,7 @@ python 2.7, 3.3+
 
 from functools import reduce, wraps
 from itertools import islice, count, cycle, compress, chain, combinations
-import math
+from math import factorial, sqrt
 import numbers
 import operator
 
@@ -39,7 +39,7 @@ def mul(iterable):
 
     >>> mul([2,3])
     6
-    >>> mul(range(1,6)) == math.factorial(5)
+    >>> mul(range(1,6)) == factorial(5)
     True
     """
 
@@ -54,7 +54,7 @@ def comb(n, r):
     >>> comb(6, 1)
     6
     """
-    return math.factorial(n) // (math.factorial(r)*(math.factorial(n-r)))
+    return factorial(n) // (factorial(r)*(factorial(n-r)))
 
 def all_combos(s):
     """ 
@@ -297,8 +297,9 @@ primes = AscendingCachedIter(eratos())
 fib_numbers = AscendingCachedIter(fib_iter())
 
 def fib_num(idx):
-  gold_ratio = (1+math.sqrt(5))/2
-  return int((gold_ratio**idx - (1 - gold_ratio)**idx)/math.sqrt(5))
+    """ Finds the fibonacci number at a given index """
+    gold_ratio = (1+sqrt(5))/2
+    return int((gold_ratio**idx - (1 - gold_ratio)**idx)/sqrt(5))
 
 def find_triangle_numbers(start=0):
     """ Generates triangle numbers """
@@ -341,7 +342,7 @@ def find_divisors(n):
     return find_divisors_from_primes(list(find_prime_factors(n)))
 
 def is_square(k):
-    return int(math.sqrt(k))**2 == int(k)
+    return int(sqrt(k))**2 == int(k)
 
 if __name__ == '__main__':
     import doctest
