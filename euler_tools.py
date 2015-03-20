@@ -26,6 +26,9 @@ except ImportError:
 
 # ======= Calculations =======
 
+def get_digits(num):
+    return set(unicode(num))
+
 def concat(iterable):
     return u''.join(unicode(v) for v in iterable)
 
