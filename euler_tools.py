@@ -58,13 +58,13 @@ def comb(n, r):
 
 def all_combos(s):
     """ 
-        Generates tuples of all possible combinations of the items in s.
+    Generates tuples of all possible combinations of the items in s.
 
-        >>> combos = list(all_combos([2,2,3]))
-        >>> (2, 2) in combos
-        True
-        >>> (2,) in combos
-        True
+    >>> combos = list(all_combos([2,2,3]))
+    >>> (2, 2) in combos
+    True
+    >>> (2,) in combos
+    True
     """
 
     return chain.from_iterable((tuple(c) for c in combinations(s, r)) for r in range(1, len(s)+1))
@@ -72,14 +72,14 @@ def all_combos(s):
 
 def powerset(s):
     """
-        Creates a set of all possible subsets of s except for the empty set.
-        >>> p_set = powerset([1,2,3])
-        >>> {1,2,3} in p_set
-        True
-        >>> {1,3} in p_set
-        True
-        >>> {2,} in p_set
-        True
+    Creates a set of all possible subsets of s except for the empty set.
+    >>> p_set = powerset([1,2,3])
+    >>> {1,2,3} in p_set
+    True
+    >>> {1,3} in p_set
+    True
+    >>> {2,} in p_set
+    True
     """
 
     return frozenset(frozenset(c) for c in all_combos(s))
