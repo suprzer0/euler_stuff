@@ -135,6 +135,7 @@ class CachedIter(Iterable, object):
         self.cache.append(n)
         return n
 
+    # python 2.x compat
     __next__ = next
 
 
