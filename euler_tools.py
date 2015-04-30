@@ -111,11 +111,11 @@ class CachedIter(Iterable, object):
         self.cache = []
 
     def __iter__(self):
-        for item in self.cache:
-            yield item
-
-        while True:
-            yield next(self)
+        for idx in count():
+            try:
+                yield self.cache[idx]
+            except IndexError:
+                yield next(self)
 
     def __getitem__(self, index):
         if isinstance(index, slice):

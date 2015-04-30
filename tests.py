@@ -21,6 +21,21 @@ class CachedIterTests(unittest.TestCase):
         self.assertIsInstance(evens_sliced, CachedIter)
         self.assertEqual(evens_sliced[:2], [12, 14])
 
+    def test_multiple_iter(self):
+        """
+        Multiple iterators on the same CachedIter don't affect each other
+        """
+        evens = CachedIter(count(2, 2))
+
+        i1 = iter(evens)
+        i2 = iter(evens)
+
+        self.assertEqual(next(i1), 2)
+        self.assertEqual(next(i2), 2)
+        self.assertEqual(next(i1), 4)
+        self.assertEqual(next(i2), 4)
+
+
 class AscendingCachedIterTests(unittest.TestCase):
         
     def test_finite(self):
