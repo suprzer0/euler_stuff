@@ -93,16 +93,22 @@ class CachedIter(Iterable, object):
     
     >>> from itertools import count
     >>> evens = CachedIter(count(2,2))
+
+    Supports indexing
     >>> evens[1]
     4
-    >>> evens[:2]
-    [2, 4]
-    >>> evens[2:5]
-    [6, 8, 10]
-    >>> evens_sliced = evens[5:]
-    >>> isinstance(evens_sliced, evens.__class__)
+
+    And slicing
+    >>> isinstance(evens[:2], evens.__class__)
     True
-    >>> evens_sliced[:2]
+    >>> list(evens[:2])
+    [2, 4]
+    >>> list(evens[2:5])
+    [6, 8, 10]
+
+    And slicing those slices
+    >>> evens_sliced = evens[5:]
+    >>> list(evens_sliced[:2])
     [12, 14]
     """
 
@@ -246,7 +252,7 @@ def fib_iter():
 @cached_iter(ascending=True)
 def eratos():
     """ Prime number generator using sieve of eratos """
-    D = {9:3, 25:5}
+    D = {9:3, 25:5} # composite num -> 1st prime factor
     yield 2
     yield 3
     yield 5
@@ -255,7 +261,7 @@ def eratos():
 
     for q in compress(
             count(7, 2),
-            cycle(MASK)):
+            cycle(MASK)): #235 wheel
         p = D.pop(q, None)
         if p is None:
             D[q*q] = q
