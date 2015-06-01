@@ -135,13 +135,13 @@ class CachedIter(Iterable, object):
 
             return next(islice(iter(self), index, index+1))
 
-    def next(self):
+    def __next__(self):
         n = next(self._iter)
         self.cache.append(n)
         return n
 
     # python 2.x compat
-    __next__ = next
+    next = __next__
 
 
 class AscendingCachedIter(CachedIter, Container):
