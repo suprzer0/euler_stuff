@@ -229,6 +229,7 @@ def cached_iter(_func=None, ascending=False):
                 return AscendingCachedIter(_iter)
             else:
                 return CachedIter(_iter)
+        wrapped_f.iter_func = f
         return wrapped_f
 
     if _func:
