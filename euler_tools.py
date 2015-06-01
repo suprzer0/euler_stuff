@@ -8,7 +8,6 @@ python 2.7, 3.3+
 from functools import reduce, wraps
 from itertools import islice, count, cycle, compress, chain, combinations
 from math import factorial, sqrt
-import numbers
 import operator
 
 # Alias unicode as str when using python3
@@ -179,9 +178,6 @@ class AscendingCachedIter(CachedIter, Container):
 
 
     def index(self, item):
-        if not isinstance(item, numbers.Number):
-            return 
-
         if self.cache:
             try:
                 return self.cache.index(item)
