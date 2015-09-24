@@ -31,14 +31,14 @@ def get_digits(num):
 def concat(iterable):
     return u''.join(unicode(v) for v in iterable)
 
-def mul(iterable):
+def product(iterable):
     """
     Multiplies all of the values from an iterable.
     Similar to how sum() adds all of the values from an iterable.
 
-    >>> mul([2,3])
+    >>> product([2,3])
     6
-    >>> mul(range(1,6)) == factorial(5)
+    >>> product(range(1,6)) == factorial(5)
     True
     """
 
@@ -197,56 +197,14 @@ class AscendingCachedIter(CachedIter, Container):
 
         raise ValueError("{0} is not in {1}".format(item, self.__class__.__name__))
 
-
-def cached_iter(_func=None, ascending=False):
-    """
-    Decorator for auto-wrapping iterators in a CachedIter or
-    AscendingCachedIter
-
-    >>> @cached_iter
-    ... def i(start):
-    ...   yield start
-    ...   yield start-1
-    >>> a = i(3)
-    >>> a.__class__.__name__
-    'CachedIter'
-
-    >>> @cached_iter(ascending=True)
-    ... def k(start):
-    ...   yield start
-    ...   yield start+2
-    >>> b = k(3)
-    >>> b.__class__.__name__
-    'AscendingCachedIter'
-    """
-
-    def wrap(f):
-        @wraps(f)
-        def wrapped_f(*args, **kwargs):
-            _iter = f(*args, **kwargs)
-        
-            if ascending:
-                return AscendingCachedIter(_iter)
-            else:
-                return CachedIter(_iter)
-        wrapped_f.iter_func = f
-        return wrapped_f
-
-    if _func:
-        return wrap(_func)
-    else:
-        return wrap
-
-@cached_iter(ascending=True)
-def fib_iter():
-    """ Simple generator for the fibonacci sequence """
+def fib():
+    """ Simple nieve generator for the fibonacci sequence """
 
     a, b = 1, 1
     while True:
         yield a
         a, b = b, a+b
 
-@cached_iter(ascending=True)
 def eratos():
     """ Prime number generator using sieve of eratos """
     D = {9:3, 25:5} # composite num -> 1st prime factor
@@ -270,7 +228,7 @@ def eratos():
             D[x] = p
 
 # Cached iter of primes used by other functions in this module.
-primes = eratos()
+primes = AscendingCachedIter(eratos())
 
 def fib_num(idx):
     """ Finds the fibonacci number at a given index """

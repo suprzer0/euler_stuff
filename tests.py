@@ -3,7 +3,7 @@ import unittest
 from itertools import count
 
 import euler_tools
-from euler_tools import CachedIter, AscendingCachedIter, cached_iter
+from euler_tools import CachedIter, AscendingCachedIter
 
 dtests = DocTestSuite(euler_tools)
 
@@ -59,45 +59,6 @@ class AscendingCachedIterTests(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             evens.index(3)
-
-class CachedIterDecoratorTests(unittest.TestCase):
-
-    def test_cached_iter(self):
-
-        @cached_iter
-        def i(start):
-            yield start
-            yield start-1
-
-        a = i(3)
-        self.assertIsInstance(a, CachedIter)
-        self.assertNotIsInstance(a, AscendingCachedIter)
-        self.assertEqual(list(a), [3, 2])
-        self.assertEqual(a.cache, [3, 2])
-
-    def test_ascending_cached_iter(self):
-
-        @cached_iter(ascending=True)
-        def k(start):
-            yield start
-            yield start+2
-
-        b = k(3)
-        self.assertIsInstance(b, AscendingCachedIter)
-
-        self.assertIn(3, b)
-        self.assertNotIn(4, b)
-        self.assertIn(5, b)
-        self.assertNotIn(6, b)
-
-    def test_decorate_normal_function(self):
-
-        @cached_iter()
-        def foo():
-            return 1
-
-        with self.assertRaises(TypeError):
-            foo()
 
 if __name__ == '__main__':
     unittest.main()
