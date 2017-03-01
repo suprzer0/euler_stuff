@@ -261,7 +261,7 @@ def find_divisors_from_primes(prime_factors):
     
     """
 
-    return {1} | set(mul(vals) for vals in all_combos(prime_factors))
+    return {1} | set(product(vals) for vals in all_combos(prime_factors))
 
 def find_divisors(n):
     """
