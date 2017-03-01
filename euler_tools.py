@@ -98,8 +98,6 @@ class CachedIter(Iterable, object):
     4
 
     And slicing
-    >>> isinstance(evens[:2], evens.__class__)
-    True
     >>> list(evens[:2])
     [2, 4]
     >>> list(evens[2:5])
