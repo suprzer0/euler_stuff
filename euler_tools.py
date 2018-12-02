@@ -261,7 +261,3 @@ def find_divisors(n):
 
 def is_square(k):
     return int(sqrt(k))**2 == int(k)
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
