@@ -1,24 +1,39 @@
-from collections.abc import Iterable, Container
-from functools import reduce, wraps
-from itertools import islice, count, cycle, compress, chain, combinations
-from math import factorial, sqrt
 import operator
+from collections.abc import Container, Iterable
+from functools import reduce, wraps
+from itertools import chain, combinations, compress, count, cycle, islice
+from math import factorial, sqrt
 
 __all__ = (
-    'get_digits', 'concat', 'product', 'comb', 'all_combos', 'powerset',
-    'CachedIter', 'AscendingCachedIter', 'fib', 'eratos', 'fib_num',
-    'find_triangle_numbers', 'find_prime_factors', 'find_divisors_from_primes',
-    'find_divisors', 'is_square',
+    "get_digits",
+    "concat",
+    "product",
+    "comb",
+    "all_combos",
+    "powerset",
+    "CachedIter",
+    "AscendingCachedIter",
+    "fib",
+    "eratos",
+    "fib_num",
+    "find_triangle_numbers",
+    "find_prime_factors",
+    "find_divisors_from_primes",
+    "find_divisors",
+    "is_square",
 )
-    
+
 
 # ======= Calculations =======
+
 
 def get_digits(num):
     return set(str(num))
 
+
 def concat(iterable):
-    return u''.join(str(v) for v in iterable)
+    return u"".join(str(v) for v in iterable)
+
 
 def product(iterable):
     """
@@ -33,6 +48,7 @@ def product(iterable):
 
     return reduce(operator.mul, iterable, 1)
 
+
 def comb(n, r):
     """
     Finds the number of combinations for n items taken r at a time.
@@ -42,7 +58,8 @@ def comb(n, r):
     >>> comb(6, 1)
     6
     """
-    return factorial(n) // (factorial(r)*(factorial(n-r)))
+    return factorial(n) // (factorial(r) * (factorial(n - r)))
+
 
 def all_combos(s):
     """ 
@@ -55,7 +72,9 @@ def all_combos(s):
     True
     """
 
-    return chain.from_iterable((tuple(c) for c in combinations(s, r)) for r in range(1, len(s)+1))
+    return chain.from_iterable(
+        (tuple(c) for c in combinations(s, r)) for r in range(1, len(s) + 1)
+    )
 
 
 def powerset(s):
@@ -72,7 +91,9 @@ def powerset(s):
 
     return frozenset(frozenset(c) for c in all_combos(s))
 
+
 # ======= Iterators =======
+
 
 class CachedIter(Iterable, object):
     """ 
@@ -118,9 +139,13 @@ class CachedIter(Iterable, object):
                 return self.__class__(s)
         else:
             if index < 0:
-                raise IndexError("{0} does not support negative indicies".format(self.__class__.__name__))
+                raise IndexError(
+                    "{0} does not support negative indicies".format(
+                        self.__class__.__name__
+                    )
+                )
 
-            return next(islice(iter(self), index, index+1))
+            return next(islice(iter(self), index, index + 1))
 
     def __next__(self):
         n = next(self._iter)
@@ -160,7 +185,6 @@ class AscendingCachedIter(CachedIter, Container):
         except (ValueError, StopIteration):
             return False
 
-
     def index(self, item):
         if self.cache:
             try:
@@ -181,61 +205,66 @@ class AscendingCachedIter(CachedIter, Container):
 
         raise ValueError("{0} is not in {1}".format(item, self.__class__.__name__))
 
+
 def fib():
     """ Simple nieve generator for the fibonacci sequence """
 
     a, b = 1, 1
     while True:
         yield a
-        a, b = b, a+b
+        a, b = b, a + b
+
 
 def eratos():
     """ Prime number generator using sieve of eratos """
-    D = {9:3, 25:5} # composite num -> 1st prime factor
+    D = {9: 3, 25: 5}  # composite num -> 1st prime factor
     yield 2
     yield 3
     yield 5
-    MASK = (1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0,)
+    MASK = (1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0)
     MODULOS = frozenset((1, 7, 11, 13, 17, 19, 23, 29))
 
-    for q in compress(
-            count(7, 2),
-            cycle(MASK)): #235 wheel
+    for q in compress(count(7, 2), cycle(MASK)):  # 235 wheel
         p = D.pop(q, None)
         if p is None:
-            D[q*q] = q
+            D[q * q] = q
             yield q
         else:
-            x = q + 2*p
-            while x in D or (x%30) not in MODULOS:
-                x += 2*p
+            x = q + 2 * p
+            while x in D or (x % 30) not in MODULOS:
+                x += 2 * p
             D[x] = p
+
 
 # Cached iter of primes used by other functions in this module.
 primes = AscendingCachedIter(eratos())
 
+
 def fib_num(idx):
     """ Finds the fibonacci number at a given index """
-    gold_ratio = (1+sqrt(5))/2
-    return int((gold_ratio**idx - (1 - gold_ratio)**idx)/sqrt(5))
+    gold_ratio = (1 + sqrt(5)) / 2
+    return int((gold_ratio ** idx - (1 - gold_ratio) ** idx) / sqrt(5))
+
 
 def find_triangle_numbers(start=0):
     """ Generates triangle numbers """
-    val = sum(range(1,start))
+    val = sum(range(1, start))
 
-    for i in count(start+1):
+    for i in count(start + 1):
         yield val
         val += i
 
+
 def find_prime_factors(n):
     """ Finds the prime factors of a positive integer n """
-    
+
     while n > 1:
         for p in primes:
             if n % p == 0:
                 yield p
                 n /= p
                 break
+
 
 def find_divisors_from_primes(prime_factors):
     """ 
@@ -249,6 +278,7 @@ def find_divisors_from_primes(prime_factors):
 
     return {1} | set(product(vals) for vals in all_combos(prime_factors))
 
+
 def find_divisors(n):
     """
     Generates a set of divisors from the number n 
@@ -259,5 +289,6 @@ def find_divisors(n):
     """
     return find_divisors_from_primes(list(find_prime_factors(n)))
 
+
 def is_square(k):
-    return int(sqrt(k))**2 == int(k)
+    return int(sqrt(k)) ** 2 == int(k)

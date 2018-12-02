@@ -1,7 +1,9 @@
 from itertools import count
-from euler_tools import CachedIter, AscendingCachedIter
 
 import pytest
+
+from euler_tools import AscendingCachedIter, CachedIter
+
 
 def test_cachediter_infinite():
     evens = CachedIter(count(2, 2))
@@ -10,7 +12,7 @@ def test_cachediter_infinite():
     assert evens[:2] == [2, 4]
     assert evens[2:5] == [6, 8, 10]
     assert evens[5:15:2] == [12, 16, 20, 24, 28]
-    
+
     evens_sliced = evens[5:]
     assert isinstance(evens_sliced, CachedIter)
     assert evens_sliced[:2] == [12, 14]
@@ -51,6 +53,6 @@ def test_ascendingcachediter_index():
 
     assert evens[4] == 10
     assert evens.index(10) == 4
-    
+
     with pytest.raises(ValueError):
         evens.index(3)
