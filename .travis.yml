@@ -1,6 +1,5 @@
 language: python
 python:
-    - "2.7"
-    - "3.3"
-    - "3.4"
-script: nosetests
+    - "3.6"
+    - "3.7"
+script: pytest --doctest-modules

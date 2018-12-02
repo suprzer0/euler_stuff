@@ -1,26 +1,8 @@
-from __future__ import division
-""" 
-Various stuff I've written to help w/ solving project euler problems
-
-python 2.7, 3.3+
-"""
-
+from collections.abc import Iterable, Container
 from functools import reduce, wraps
 from itertools import islice, count, cycle, compress, chain, combinations
 from math import factorial, sqrt
 import operator
-
-# Alias unicode as str when using python3
-try:
-    unicode('')
-except NameError:
-    unicode = str
-
-try:
-    # py 3.3+
-    from collections.abc import Iterable, Container
-except ImportError:
-    from collections import Iterable, Container
 
 __all__ = (
     'get_digits', 'concat', 'product', 'comb', 'all_combos', 'powerset',
@@ -33,10 +15,10 @@ __all__ = (
 # ======= Calculations =======
 
 def get_digits(num):
-    return set(unicode(num))
+    return set(str(num))
 
 def concat(iterable):
-    return u''.join(unicode(v) for v in iterable)
+    return u''.join(str(v) for v in iterable)
 
 def product(iterable):
     """
@@ -144,9 +126,6 @@ class CachedIter(Iterable, object):
         n = next(self._iter)
         self.cache.append(n)
         return n
-
-    # python 2.x compat
-    next = __next__
 
 
 class AscendingCachedIter(CachedIter, Container):
